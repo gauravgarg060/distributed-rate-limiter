@@ -79,4 +79,4 @@ If Docker Desktop is installed without system-wide command links, the Make targe
 
 ## Verified on this Mac
 
-Docker Desktop is installed in `/Applications/Docker.app`. The Linux image built successfully, all three Compose services passed their health checks, and the shared-quota smoke test and demo passed. A temporary Redis record survived removing and recreating the containers with the named volume retained; the record was then removed. This checks normal volume persistence, not crash-proof or zero-loss durability. GitHub CI still needs a real repository run.
+Docker Desktop is installed in `/Applications/Docker.app`. The Linux image built successfully, all three Compose services passed their health checks, and the shared-quota smoke test and demo passed. A temporary Redis record survived removing and recreating the containers with the named volume retained; the record was then removed. This checks normal volume persistence, not crash-proof or zero-loss durability. GitHub CI also passed: see the [successful GitHub Actions run](https://github.com/gauravgarg060/distributed-rate-limiter/actions/runs/36593584252).

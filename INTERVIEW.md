@@ -205,4 +205,4 @@ Before the deadline:
 - Document any incomplete work or unverified deployment path.
 - Log out of GitHub, Cursor, and browser accounts before returning the interview machine.
 
-For this prepared project, native build/tests, the Docker image build, container health, shared-quota smoke test, and demo were verified. GitHub CI remains unverified. Local deployment meets the clarification you received from the team.
+For this prepared project, native build/tests, the Docker image build, container health, shared-quota smoke test, and demo were verified. GitHub CI also passed: see the [successful GitHub Actions run](https://github.com/gauravgarg060/distributed-rate-limiter/actions/runs/36593584252). Local deployment meets the clarification you received from the team.

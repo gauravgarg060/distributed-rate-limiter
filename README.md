@@ -15,7 +15,7 @@ Two copies of the C++ API run locally. Both use the same Redis server, so sendin
 | [Local Docker guide](DOCKER.md) | Run Redis and both APIs in containers |
 | [Interview walkthrough](INTERVIEW.md) | Demonstrate the project and explain its decisions with examples |
 
-Start here, run the demo, and then read the architecture guide. The native build/tests and local Docker build, three-container startup, shared-quota smoke test, and demo have been verified. GitHub Actions has not yet been run on GitHub.
+Start here, run the demo, and then read the architecture guide. The native build/tests and local Docker build, three-container startup, shared-quota smoke test, and demo have been verified. The Ubuntu build, integration suite, and Docker smoke test also passed in the [successful GitHub Actions run](https://github.com/gauravgarg060/distributed-rate-limiter/actions/runs/36593584252).
 
 ## 1. Run the project locally
 
@@ -233,7 +233,7 @@ CI means checking changes automatically after a push or pull request. The suppli
 4. Runs the same tests, including the two-instance test.
 5. Builds the Docker image, starts the Compose stack, and runs the container smoke test.
 
-Place this project's contents at the repository root so GitHub finds `.github/workflows/ci.yml`. It needs no deployment credentials. It checks the build and tests; it does not deploy the service. No repository has been pushed automatically, and a GitHub run has not yet been verified.
+Place this project's contents at the repository root so GitHub finds `.github/workflows/ci.yml`. It needs no deployment credentials. It checks the build and tests; it does not deploy the service. The project is published at https://github.com/gauravgarg060/distributed-rate-limiter and has a [successful GitHub Actions run](https://github.com/gauravgarg060/distributed-rate-limiter/actions/runs/36593584252).
 
 ### Run with Docker Compose
 
