@@ -159,6 +159,53 @@ The answer needs measurement. Likely constraints include Redis script throughput
 
 First measure throughput and tail latency. Then consider connection/command optimizations or distributing tenants across Redis servers. One very busy tenant can still be a concentrated source of contention.
 
+### How would you scale Redis in production?
+
+> “The current implementation uses one Redis primary to demonstrate atomic contention handling.
+> In production I would use a managed Redis Cluster. The cluster partitions tenant buckets across
+> hash slots, and each primary has replicas for automatic failover. A cluster-aware client routes
+> each command to the primary that owns the key and handles topology changes. The Lua operation
+> touches one hash-tagged tenant key, so it remains atomic within one shard.”
+
+Keep these responsibilities separate:
+
+| Concern | Owner |
+|---|---|
+| Partition keys across primaries | Redis Cluster hash slots |
+| Detect failed primaries and promote replicas | Redis Cluster or managed service |
+| Route commands to the correct primary | Cluster-aware application client |
+| Define bucket keys and atomic Lua behavior | Rate limiter application |
+| Choose fail-open or fail-closed behavior | Product and application |
+
+Redis Cluster still uses primaries and replicas; it removes the need for the application to
+implement its own sharding and replica promotion. The application still needs a cluster-aware
+client. Our current hiredis wrapper connects to one host and treats Redis error replies as
+failures. A cluster client instead maintains the slot map and handles:
+
+- `MOVED`: the slot permanently belongs to another node; update routing and retry there.
+- `ASK`: the slot is temporarily moving; send `ASKING` and this command to the indicated node.
+- Failover: refresh topology and connect to the promoted primary.
+- Connection pooling: retain connections to the primaries that own the relevant slots.
+
+The existing key `rl:{tenant-a}:bucket` is cluster-friendly. Text inside braces is a Redis hash
+tag, so related keys such as `rl:{tenant-a}:bucket` and `rl:{tenant-a}:idempotency` can be placed
+in the same slot. A multi-key Lua script can execute only when all of its keys share one slot;
+otherwise Redis returns `CROSSSLOT`.
+
+Do not overstate the guarantee. Atomic Lua prevents operations from interleaving on the current
+primary, but Redis replication is asynchronous. A promoted replica can lack a recently
+acknowledged token consumption. During topology changes, evaluations may also fail temporarily,
+so this service should continue to fail closed when it cannot obtain an authoritative decision.
+
+One hot tenant still maps to one primary. Splitting one tenant's bucket across shards would make
+exact enforcement require coordination or an intentionally approximate allocation. Handle abuse
+at the edge, assign legitimate high-volume tenants dedicated capacity, or accept bounded
+over-admission rather than pretending ordinary sharding solves a single hot key.
+
+For this exercise, deploying a multi-node cluster would add substantial infrastructure and test
+surface without changing the core contention algorithm. Describe Redis Cluster as the production
+evolution, and keep the single primary as a focused demonstration whose limitation is explicit.
+
 ### How did you prove distributed correctness?
 
 The test starts real Redis and two independent API processes, then sends 80 concurrent requests across both. Capacity is ten; refill is one token per 1000 seconds. It asserts completion before that refill interval and exactly ten allowed decisions.

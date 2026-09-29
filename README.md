@@ -12,8 +12,10 @@ Two copies of the C++ API run locally. Both use the same Redis server, so sendin
 |---|---|
 | This README | Run the service, call its APIs, understand results, and troubleshoot |
 | [Architecture explained](ARCHITECTURE.md) | How the algorithm works, why Redis is needed, and what happens during failures |
+| [Code walkthrough](CODE_WALKTHROUGH.md) | Follow startup, one request, Lua execution, failures, tests, and deployment |
 | [Local Docker guide](DOCKER.md) | Run Redis and both APIs in containers |
 | [Interview walkthrough](INTERVIEW.md) | Demonstrate the project and explain its decisions with examples |
+| [Requirements review](REVIEW.md) | See requirement coverage, gaps, and concise interview notes |
 
 Start here, run the demo, and then read the architecture guide. The native build/tests and local Docker build, three-container startup, shared-quota smoke test, and demo have been verified. The Ubuntu build, integration suite, and Docker smoke test also passed in the [successful GitHub Actions run](https://github.com/gauravgarg060/distributed-rate-limiter/actions/runs/36593584252).
 
