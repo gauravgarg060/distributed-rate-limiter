@@ -1,0 +1,60 @@
+name: interview-rate-limiter
+x-api: &api
+  build: .
+  image: interview-rate-limiter:local
+  user: "${LOCAL_UID:-10001}:${LOCAL_GID:-10001}"
+  environment: &environment
+    BIND_HOST: 0.0.0.0
+    PORT: "8081"
+    REDIS_HOST: redis
+    REDIS_PORT: "6379"
+    TENANTS_FILE: /config/tenants.json
+    KEY_PREFIX: rl-docker
+  volumes:
+    - type: bind
+      source: ./.local/tenants.json
+      target: /config/tenants.json
+      read_only: true
+      bind:
+        create_host_path: false
+  depends_on:
+    redis:
+      condition: service_healthy
+  restart: unless-stopped
+  healthcheck:
+    test: ["CMD", "curl", "--fail", "--silent", "--max-time", "3", "http://127.0.0.1:8081/readyz"]
+    interval: 5s
+    timeout: 4s
+    retries: 12
+    start_period: 5s
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  read_only: true
+services:
+  redis:
+    image: redis:7.2-alpine
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec", "--maxmemory-policy", "noeviction"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 2s
+      retries: 20
+    restart: unless-stopped
+  api-1:
+    <<: *api
+    environment:
+      <<: *environment
+      INSTANCE_ID: docker-api-1
+    ports:
+      - "127.0.0.1:${API_PORT_A:-8081}:8081"
+  api-2:
+    <<: *api
+    environment:
+      <<: *environment
+      INSTANCE_ID: docker-api-2
+    ports:
+      - "127.0.0.1:${API_PORT_B:-8082}:8081"
+volumes:
+  redis-data:

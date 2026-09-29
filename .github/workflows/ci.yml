@@ -1,0 +1,28 @@
+name: C++ rate limiter CI
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  build-and-test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Install compiler and isolated-test Redis executable
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential python3 redis-server
+      - name: Build
+        run: make -j2
+      - name: Unit and two-instance integration tests
+        run: make test
+      - name: Start and test containers
+        run: |
+          make docker-up
+          make docker-test
+      - name: Container logs on failure
+        if: failure()
+        run: docker compose --env-file .local/docker.env logs --tail=100
+      - name: Stop test containers
+        if: always()
+        run: docker compose --env-file .local/docker.env down

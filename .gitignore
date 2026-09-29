@@ -1,0 +1,12 @@
+.local/
+build/
+__pycache__/
+*.pyc
+vendor/hiredis/*.o
+vendor/hiredis/*.a
+vendor/hiredis/*.so*
+vendor/hiredis/*.dylib
+vendor/hiredis/*.pc
+vendor/hiredis/hiredis-test
+
+.DS_Store

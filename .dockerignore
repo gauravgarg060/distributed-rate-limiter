@@ -1,0 +1,8 @@
+.local
+build
+.git
+**/__pycache__
+vendor/hiredis/*.o
+vendor/hiredis/*.a
+vendor/hiredis/*.so*
+vendor/hiredis/*.dylib

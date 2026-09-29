@@ -1,0 +1,4 @@
+[
+  {"id":"tenant-a","token":"replace-this-example-with-a-random-secret-a","capacity":10,"refill_per_second":2},
+  {"id":"tenant-b","token":"replace-this-example-with-a-random-secret-b","capacity":10,"refill_per_second":2}
+]
